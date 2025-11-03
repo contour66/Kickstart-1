@@ -4,8 +4,13 @@ import contentstack, { QueryOperation } from "@contentstack/delivery-sdk";
 // Importing Contentstack Live Preview utilities and stack SDK 
 import ContentstackLivePreview, { IStackSdk } from "@contentstack/live-preview-utils";
 
-// Importing the Page type definition 
-import { Page } from "./types";
+// Importing type definitions
+import {
+  Page,
+  Homepage,
+  ProductListingPage,
+  Product,
+} from "./types";
 
 // helper functions from private package to retrieve Contentstack endpoints in a convienient way
 import { getContentstackEndpoints, getRegionForString } from "@timbenniks/contentstack-endpoints";
@@ -87,4 +92,109 @@ export async function getPage(url: string) {
 
     return entry; // Returning the fetched entry
   }
+}
+
+// Function to fetch homepage data
+export async function getHomepage() {
+  const result = await stack
+    .contentType("homepage")
+    .entry()
+    .query()
+    .find<Homepage>();
+
+  if (result.entries && result.entries.length > 0) {
+    const entry = result.entries[0];
+
+    if (process.env.NEXT_PUBLIC_CONTENTSTACK_PREVIEW === 'true') {
+      contentstack.Utils.addEditableTags(entry, 'homepage', true);
+    }
+
+    return entry;
+  }
+}
+
+// Function to fetch product listing page by URL
+export async function getProductListingPage(url: string) {
+  const result = await stack
+    .contentType("product_listing_page")
+    .entry()
+    .query()
+    .where("url", QueryOperation.EQUALS, url)
+    .find<ProductListingPage>();
+
+  if (result.entries && result.entries.length > 0) {
+    const entry = result.entries[0];
+
+    if (process.env.NEXT_PUBLIC_CONTENTSTACK_PREVIEW === 'true') {
+      contentstack.Utils.addEditableTags(entry, 'product_listing_page', true);
+    }
+
+    return entry;
+  }
+}
+
+// Function to fetch all product listing pages
+export async function getAllProductListingPages() {
+  const result = await stack
+    .contentType("product_listing_page")
+    .entry()
+    .query()
+    .find<ProductListingPage>();
+
+  if (result.entries) {
+    return result.entries;
+  }
+
+  return [];
+}
+
+// Function to fetch a single product by URL
+export async function getProduct(url: string) {
+  const result = await stack
+    .contentType("product")
+    .entry()
+    .query()
+    .where("url", QueryOperation.EQUALS, url)
+    .find<Product>();
+
+  if (result.entries && result.entries.length > 0) {
+    const entry = result.entries[0];
+
+    if (process.env.NEXT_PUBLIC_CONTENTSTACK_PREVIEW === 'true') {
+      contentstack.Utils.addEditableTags(entry, 'product', true);
+    }
+
+    return entry;
+  }
+}
+
+// Function to fetch a single product by UID
+export async function getProductByUid(uid: string) {
+  const entry = await stack
+    .contentType("product")
+    .entry(uid)
+    .fetch<Product>();
+
+  if (entry) {
+    if (process.env.NEXT_PUBLIC_CONTENTSTACK_PREVIEW === 'true') {
+      contentstack.Utils.addEditableTags(entry, 'product', true);
+    }
+
+    return entry;
+  }
+}
+
+// Function to fetch all products
+export async function getAllProducts() {
+  const result = await stack
+    .contentType("product")
+    .entry()
+    .query()
+    .find<Product>();
+
+  if (result.entries) {
+    return result.entries;
+  }
+
+  return [];
 }

@@ -1,132 +1,231 @@
-"use client"; // This directive indicates that the code is meant to run on the client side and the server side
+"use client";
 
-import DOMPurify from "dompurify";
-import Image from "next/image"; // Importing the Image component from Next.js for optimized image rendering
-import { getPage, initLivePreview } from "@/lib/contentstack"; // Importing functions to get page data and initialize live preview from a local library
-import { useEffect, useState } from "react"; // Importing React hooks for side effects and state management
-import { Page } from "@/lib/types"; // Importing the Page type definition from a local types file
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import ContentstackLivePreview, {
   VB_EmptyBlockParentClass,
-} from "@contentstack/live-preview-utils"; // Importing live preview utilities from Contentstack
+} from "@contentstack/live-preview-utils";
+import { getHomepage, initLivePreview } from "@/lib/contentstack";
+import { Homepage, PageComponent } from "@/lib/types";
+import HeroBanner from "@/components/HeroBanner";
+import ProductCard from "@/components/ProductCard";
+import {
+  SectionComponent,
+  SectionWithBucketsComponent,
+  SectionWithCardsComponent,
+  SectionWithHtmlCodeComponent,
+} from "@/components/SectionRenderer";
 
 /**
- * The `Home` component is the main page component for the application.
- * It fetches and displays content from Contentstack, including the page title,
- * description, image, rich text, and blocks.
+ * The `Home` component is the main homepage component for the ecommerce application.
+ * It fetches and displays content from ContentStack homepage model, including:
+ * - Hero banners
+ * - Featured products
+ * - Various content sections (buckets, cards, HTML)
+ * - Blog posts
+ * - Contact information
  *
  * @component
- * @returns {JSX.Element} The rendered component.
- *
- * This component uses the `useState` and `useEffect` hooks to manage state and side effects.
- * It initializes live preview functionality and listens for entry changes to update the content.
+ * @returns {JSX.Element} The rendered homepage.
  */
 export default function Home() {
-  const [page, setPage] = useState<Page>(); // Declaring a state variable 'page' with its setter 'setPage', initially undefined
+  const [homepage, setHomepage] = useState<Homepage>();
 
   const getContent = async () => {
-    const page = await getPage("/"); // Asynchronously fetching page data for the root URL
-    setPage(page); // Updating the state with the fetched page data
+    const data = await getHomepage();
+    setHomepage(data);
   };
 
   useEffect(() => {
-    initLivePreview(); // Initializing live preview functionality
-    ContentstackLivePreview.onEntryChange(getContent); // Setting up an event listener to fetch content on entry change
+    initLivePreview();
+    ContentstackLivePreview.onEntryChange(getContent);
+    getContent(); // Initial fetch
   }, []);
 
-  return (
-    <main className="max-w-(--breakpoint-md) mx-auto">
-      {/* Main container with max width and centered alignment */}
-      <section className="p-4">
-        {/* Section with padding */}
-        {page?.title ? (
-          <h1
-            className="text-4xl font-bold mb-4 text-center"
-            {...(page?.$ && page?.$.title)} // Adding editable tags if available
-          >
-            {page?.title} with Next{/* Rendering the page title */}
-          </h1>
-        ) : null}
-        {page?.description ? (
-          <p className="mb-4 text-center" {...(page?.$ && page?.$.description)}>
-            {/* Adding editable tags if available */}
-            {page?.description} {/* Rendering the page description */}
-          </p>
-        ) : null}
-        {page?.image ? (
-          <Image
-            className="mb-4"
-            width={768}
-            height={414}
-            src={page?.image.url}
-            alt={page?.image.title}
-            {...(page?.image?.$ && page?.image?.$.url)} // Adding editable tags if available
-          />
-        ) : null}
-        {page?.rich_text ? (
-          <div
-            {...(page?.$ && page?.$.rich_text)} // Adding editable tags if available
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(page?.rich_text),
-            }} // Rendering rich text content as HTML
-          />
-        ) : null}
-        <div
-          className={`space-y-8 max-w-full mt-4 ${
-            !page?.blocks || page.blocks.length === 0
-              ? VB_EmptyBlockParentClass // Adding a class if no blocks are present
-              : ""
-          }`}
-          {...(page?.$ && page?.$.blocks)} // Adding editable tags if available
-        >
-          {page?.blocks?.map((item, index) => {
-            const { block } = item;
-            const isImageLeft = block.layout === "image_left"; // Checking the layout of the block
-
-            return (
-              <div
-                key={block._metadata.uid}
-                {...(page?.$ && page?.$[`blocks__${index}`])} // Adding editable tags if available
-                className={`flex flex-col md:flex-row items-center space-y-4 md:space-y-0 bg-white ${
-                  isImageLeft ? "md:flex-row" : "md:flex-row-reverse" // Adjusting the layout based on the block's layout property
-                }`}
-              >
-                <div className="w-full md:w-1/2">
-                  {block.image ? (
-                    <Image
-                      key={`image-${block._metadata.uid}`}
-                      src={block.image.url}
-                      alt={block.image.title}
-                      width={200}
-                      height={112}
-                      className="w-full"
-                      {...(block?.$ && block?.$.image)} // Adding editable tags if available
-                    />
-                  ) : null}
-                </div>
-                <div className="w-full md:w-1/2 p-4">
-                  {block.title ? (
-                    <h2
-                      className="text-2xl font-bold"
-                      {...(block?.$ && block?.$.title)} // Adding editable tags if available
-                    >
-                      {block.title} {/* Rendering the block title */}
-                    </h2>
-                  ) : null}
-                  {block.copy ? (
-                    <div
-                      {...(block?.$ && block?.$.copy)} // Adding editable tags if available
-                      dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(block.copy),
-                      }} // Rendering block copy as HTML
-                      className="prose"
-                    />
-                  ) : null}
-                </div>
-              </div>
-            );
-          })}
+  const renderPageComponent = (component: PageComponent, index: number) => {
+    // Hero Banner Block
+    if ("hero_banner" in component) {
+      const heroBanners = component.hero_banner.hero_banner;
+      return (
+        <div key={index} {...(component.hero_banner.$ || {})}>
+          {heroBanners?.map((banner, i) => (
+            <HeroBanner key={i} banner={banner} />
+          ))}
         </div>
-      </section>
+      );
+    }
+
+    // Product Block
+    if ("product" in component) {
+      const products = component.product.product;
+      return (
+        <div
+          key={index}
+          className="py-12 md:py-16 bg-white"
+          {...(component.product.$ || {})}
+        >
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">
+              Featured Products
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {products?.map((product, i) => (
+                <ProductCard key={product.uid || i} product={product} />
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Section Block
+    if ("section" in component) {
+      return <SectionComponent key={index} section={component.section} />;
+    }
+
+    // Section with Buckets
+    if ("section_with_buckets" in component) {
+      return (
+        <SectionWithBucketsComponent
+          key={index}
+          section={component.section_with_buckets}
+        />
+      );
+    }
+
+    // Section with Cards
+    if ("section_with_cards" in component) {
+      return (
+        <SectionWithCardsComponent
+          key={index}
+          section={component.section_with_cards}
+        />
+      );
+    }
+
+    // Section with HTML Code
+    if ("section_with_html_code" in component) {
+      return (
+        <SectionWithHtmlCodeComponent
+          key={index}
+          section={component.section_with_html_code}
+        />
+      );
+    }
+
+    // From Blog Block
+    if ("from_blog" in component) {
+      const fromBlog = component.from_blog;
+      return (
+        <div
+          key={index}
+          className="py-12 md:py-16 bg-gray-50"
+          {...(fromBlog.$ || {})}
+        >
+          <div className="container mx-auto px-4">
+            {fromBlog.title_h2 && (
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">
+                {fromBlog.title_h2}
+              </h2>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {fromBlog.featured_blogs?.map((blog) => (
+                <div
+                  key={blog.uid}
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
+                >
+                  {blog.featured_image?.url && (
+                    <div className="relative w-full h-48">
+                      <Image
+                        src={blog.featured_image.url}
+                        alt={blog.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold mb-2">
+                      {blog.title}
+                    </h3>
+                    {blog.date && (
+                      <p className="text-sm text-gray-500 mb-4">{blog.date}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Contact Us Block
+    if ("contact_us" in component) {
+      const contact = component.contact_us.reference?.[0];
+      return (
+        <div
+          key={index}
+          className="py-12 md:py-16 bg-white"
+          {...(component.contact_us.$ || {})}
+        >
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">
+              Contact Us
+            </h2>
+            {contact && (
+              <div className="max-w-2xl mx-auto bg-gray-50 p-8 rounded-lg">
+                <h3 className="text-2xl font-semibold mb-4">{contact.title}</h3>
+                {contact.address && (
+                  <p className="mb-4">
+                    <strong>Address:</strong> {contact.address}
+                  </p>
+                )}
+                {contact.email_address && (
+                  <p className="mb-4">
+                    <strong>Email:</strong> {contact.email_address}
+                  </p>
+                )}
+                {contact.contact_number && contact.contact_number.length > 0 && (
+                  <p className="mb-4">
+                    <strong>Phone:</strong> {contact.contact_number.join(", ")}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  if (!homepage) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-gray-700">Loading...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-white">
+      <div
+        className={`${
+          !homepage.page_components || homepage.page_components.length === 0
+            ? VB_EmptyBlockParentClass
+            : ""
+        }`}
+        {...(homepage.$ && homepage.$.page_components)}
+      >
+        {homepage.page_components?.map((component, index) =>
+          renderPageComponent(component, index)
+        )}
+      </div>
     </main>
   );
 }
