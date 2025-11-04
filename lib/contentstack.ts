@@ -96,14 +96,20 @@ export async function getPage(url: string) {
 
 // Function to fetch homepage data
 export async function getHomepage() {
-  const result = await stack
+  const query: any = stack
     .contentType("homepage")
     .entry()
-    .query()
-    .find<Homepage>();
+    .query();
+
+  // Include all references to fetch hero banners, products, etc.
+  if (query.includeReference) {
+    query.includeReference();
+  }
+
+  const result = await query.find();
 
   if (result.entries && result.entries.length > 0) {
-    const entry = result.entries[0];
+    const entry = result.entries[0] as Homepage;
 
     if (process.env.NEXT_PUBLIC_CONTENTSTACK_PREVIEW === 'true') {
       contentstack.Utils.addEditableTags(entry, 'homepage', true);
@@ -115,15 +121,21 @@ export async function getHomepage() {
 
 // Function to fetch product listing page by URL
 export async function getProductListingPage(url: string) {
-  const result = await stack
+  const query: any = stack
     .contentType("product_listing_page")
     .entry()
     .query()
-    .where("url", QueryOperation.EQUALS, url)
-    .find<ProductListingPage>();
+    .where("url", QueryOperation.EQUALS, url);
+
+  // Include all references to fetch hero banners, products, etc.
+  if (query.includeReference) {
+    query.includeReference();
+  }
+
+  const result = await query.find();
 
   if (result.entries && result.entries.length > 0) {
-    const entry = result.entries[0];
+    const entry = result.entries[0] as ProductListingPage;
 
     if (process.env.NEXT_PUBLIC_CONTENTSTACK_PREVIEW === 'true') {
       contentstack.Utils.addEditableTags(entry, 'product_listing_page', true);
