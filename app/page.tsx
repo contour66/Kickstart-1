@@ -57,14 +57,12 @@ export default function Home() {
   const renderPageComponent = (component: PageComponent, index: number) => {
     // Hero Banner Block
     if ("hero_banner" in component) {
-      const heroBanners = component.hero_banner.hero_banner;
-      return (
+      const heroBanner = component.hero_banner.hero_banner;
+      return heroBanner ? (
         <div key={index} {...(component.hero_banner.$ || {})}>
-          {heroBanners?.map((banner, i) => (
-            <HeroBanner key={i} banner={banner} />
-          ))}
+          <HeroBanner banner={heroBanner} />
         </div>
-      );
+      ) : null;
     }
 
     // Product Block

@@ -224,7 +224,7 @@ export interface BlogLandingPage {
 
 // Page Components for Homepage and Product Listing Page
 export interface HeroBannerBlock {
-  hero_banner?: HeroBanner[];
+  hero_banner?: HeroBanner; // Single reference, not array
   $?: any;
 }
 
