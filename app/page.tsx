@@ -30,16 +30,28 @@ import {
  */
 export default function Home() {
   const [homepage, setHomepage] = useState<Homepage>();
+  const [error, setError] = useState<string | null>(null);
 
   const getContent = async () => {
-    const data = await getHomepage();
-    setHomepage(data);
+    try {
+      const data = await getHomepage();
+      if (data) {
+        setHomepage(data);
+        setError(null);
+      } else {
+        setError("No homepage content found. Please create a Homepage entry in ContentStack.");
+      }
+    } catch (err) {
+      console.error("Error fetching homepage:", err);
+      setError("Failed to load homepage content. Check your ContentStack configuration.");
+    }
   };
 
   useEffect(() => {
     initLivePreview();
     ContentstackLivePreview.onEntryChange(getContent);
     getContent(); // Initial fetch
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const renderPageComponent = (component: PageComponent, index: number) => {
@@ -202,11 +214,34 @@ export default function Home() {
     return null;
   };
 
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center max-w-2xl mx-auto p-8">
+          <h1 className="text-3xl font-bold text-red-600 mb-4">Homepage Error</h1>
+          <p className="text-lg text-gray-700 mb-6">{error}</p>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-left">
+            <h3 className="font-semibold text-gray-900 mb-2">Quick Fix:</h3>
+            <ol className="list-decimal list-inside space-y-2 text-gray-700">
+              <li>Go to ContentStack CMS</li>
+              <li>Navigate to <strong>Content → Homepage</strong></li>
+              <li>Click <strong>+ Add Entry</strong></li>
+              <li>Fill in the Title field</li>
+              <li>Click <strong>Save</strong> and then <strong>Publish</strong></li>
+              <li>Refresh this page</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!homepage) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-700">Loading...</h2>
+          <h2 className="text-2xl font-semibold text-gray-700">Loading homepage...</h2>
+          <p className="text-gray-500 mt-2">Fetching content from ContentStack</p>
         </div>
       </div>
     );

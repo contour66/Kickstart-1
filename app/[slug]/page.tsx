@@ -30,7 +30,13 @@ export default function ProductListingPageComponent() {
   const [loading, setLoading] = useState(true);
 
   const getContent = async () => {
-    if (!slug) return;
+    // Redirect to homepage if slug is empty or just "/"
+    if (!slug || slug === "/" || slug === "") {
+      if (typeof window !== "undefined") {
+        window.location.href = "/";
+      }
+      return;
+    }
 
     setLoading(true);
     const data = await getProductListingPage(`/${slug}`);
