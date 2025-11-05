@@ -133,9 +133,10 @@ export async function getProductListingPage(url: string) {
     .where("url", QueryOperation.EQUALS, url);
 
   // Include all references to fetch hero banners, products, etc.
+  // Call includeReference() twice to populate nested references (e.g., products -> authors)
   if (query.includeReference) {
-    console.log("4. Including references");
-    query.includeReference();
+    console.log("4. Including references (with nested references)");
+    query.includeReference().includeReference();
   }
 
   console.log("5. Executing query...");

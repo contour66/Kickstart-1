@@ -81,13 +81,37 @@ export default function ProductListingPageComponent() {
       // Product Block
       if ("product" in component) {
         const products = component.product?.product;
+        console.log("Rendering products:", products);
+
+        // Log product details to check if references are populated
+        if (products && products.length > 0) {
+          products.forEach((product: any, idx: number) => {
+            console.log(`Product ${idx}:`, {
+              title: product.title,
+              uid: product.uid,
+              hasModularBlocks: !!product.modular_blocks,
+              modularBlocksCount: product.modular_blocks?.length || 0
+            });
+            if (product.modular_blocks) {
+              product.modular_blocks.forEach((block: any, blockIdx: number) => {
+                console.log(`  Block ${blockIdx}:`, Object.keys(block));
+              });
+            }
+          });
+        }
+
         return (
           <div
             key={index}
-            className="py-12 md:py-16 bg-white"
+            className="py-12 md:py-16 bg-gradient-to-b from-white to-gray-50"
             {...(component.product?.$ || {})}
           >
             <div className="container mx-auto px-4">
+              <h2 className="text-4xl md:text-5xl font-black text-center mb-12 uppercase tracking-wide">
+                <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 bg-clip-text text-transparent">
+                  Our Products
+                </span>
+              </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {products?.map((product, i) => (
                   <ProductCard key={product.uid || i} product={product} />
