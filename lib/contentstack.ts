@@ -261,6 +261,27 @@ export async function getProductByUid(uid: string) {
   return undefined;
 }
 
+// Function to fetch an author by UID
+export async function getAuthorByUid(uid: string) {
+  try {
+    const entry = await stack
+      .contentType("author")
+      .entry(uid)
+      .fetch();
+
+    if (entry) {
+      const author = entry as any;
+      if (process.env.NEXT_PUBLIC_CONTENTSTACK_PREVIEW === 'true') {
+        contentstack.Utils.addEditableTags(author, 'author', true);
+      }
+      return author;
+    }
+  } catch (err) {
+    console.error(`Error fetching author ${uid}:`, err);
+  }
+  return null;
+}
+
 // Function to fetch all products
 export async function getAllProducts() {
   const result = await stack

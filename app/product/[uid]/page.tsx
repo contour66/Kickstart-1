@@ -8,6 +8,7 @@ import ContentstackLivePreview from "@contentstack/live-preview-utils";
 import { getProductByUid, initLivePreview } from "@/lib/contentstack";
 import { Product, ProductModularBlock } from "@/lib/types";
 import FeaturedArtist from "@/components/FeaturedArtist";
+import FeaturedArtistLoader from "@/components/FeaturedArtistLoader";
 import ProductSpecs from "@/components/ProductSpecs";
 import { SectionWithCardsComponent } from "@/components/SectionRenderer";
 
@@ -82,22 +83,12 @@ export default function ProductDetailPage() {
           const firstRef = reference[0];
           // Check if it's a full Author object (has title field) or just a reference stub
           if ('title' in firstRef) {
+            // Reference is fully populated - render directly
             return <FeaturedArtist key={index} artist={firstRef} />;
           } else {
-            // Reference not populated - show warning
-            console.warn('Featured artist reference not populated. Need to fetch author data separately or use includeReference.');
-            return (
-              <div key={index} className="py-12 md:py-16 bg-gray-50">
-                <div className="container mx-auto px-4">
-                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-8">
-                    Featured Artist
-                  </h2>
-                  <p className="text-center text-gray-600">
-                    Artist reference not loaded. UID: {firstRef.uid}
-                  </p>
-                </div>
-              </div>
-            );
+            // Reference is a stub - fetch author data separately
+            console.log('Featured artist reference is a stub. Fetching author data for UID:', firstRef.uid);
+            return <FeaturedArtistLoader key={index} authorUid={firstRef.uid} />;
           }
         }
         return null;
