@@ -53,10 +53,10 @@ export default function HeroBanner({ banner }: HeroBannerProps) {
               </p>
             )}
 
-            {banner.call_to_action?.href && (
+            {(banner.call_to_action?.href || banner.call_to_action?.url) && (
               <div className={contentAlignment}>
                 <Link
-                  href={banner.call_to_action.href}
+                  href={banner.call_to_action.href || banner.call_to_action.url || '#'}
                   className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors duration-300"
                   {...(banner.$ ? banner.$.call_to_action : {})}
                 >

@@ -162,10 +162,10 @@ export default function ProductDetailPage() {
             )}
 
             {/* Call to Action Button */}
-            {product.call_to_action?.title && product.call_to_action?.href && (
+            {product.call_to_action?.title && (product.call_to_action?.href || product.call_to_action?.url) && (
               <div className="space-y-4">
                 <Link
-                  href={product.call_to_action.href}
+                  href={product.call_to_action.href || product.call_to_action.url || '#'}
                   className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold px-8 py-4 rounded-lg transition-colors text-lg"
                   {...(product.$ && product.$.call_to_action)}
                 >

@@ -42,9 +42,9 @@ export function SectionComponent({ section }: { section: Section }) {
               </p>
             )}
 
-            {section.call_to_action?.href && (
+            {(section.call_to_action?.href || section.call_to_action?.url) && (
               <Link
-                href={section.call_to_action.href}
+                href={section.call_to_action.href || section.call_to_action.url || '#'}
                 className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
                 {...(section.$ ? section.$.call_to_action : {})}
               >
@@ -141,9 +141,9 @@ export function SectionWithBucketsComponent({
                 <p className="text-gray-600 mb-4">{bucket.description}</p>
               )}
 
-              {bucket.call_to_action?.href && (
+              {(bucket.call_to_action?.href || bucket.call_to_action?.url) && (
                 <Link
-                  href={bucket.call_to_action.href}
+                  href={bucket.call_to_action.href || bucket.call_to_action.url || '#'}
                   className="text-blue-600 hover:text-blue-800 font-medium"
                 >
                   {bucket.call_to_action.title} →
@@ -216,9 +216,9 @@ export function SectionWithCardsComponent({
                   <p className="text-gray-600 mb-4">{card.description}</p>
                 )}
 
-                {card.call_to_action?.href && (
+                {(card.call_to_action?.href || card.call_to_action?.url) && (
                   <Link
-                    href={card.call_to_action.href}
+                    href={card.call_to_action.href || card.call_to_action.url || '#'}
                     className="text-blue-600 hover:text-blue-800 font-medium"
                   >
                     {card.call_to_action.title} →

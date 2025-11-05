@@ -69,9 +69,9 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         </Link>
 
-        {product.call_to_action?.title && product.call_to_action?.href && (
+        {product.call_to_action?.title && (product.call_to_action?.href || product.call_to_action?.url) && (
           <Link
-            href={product.call_to_action.href}
+            href={product.call_to_action.href || product.call_to_action.url || '#'}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold px-4 py-2 rounded-lg transition-colors"
             {...(product.$ ? product.$.call_to_action : {})}
           >

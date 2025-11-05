@@ -33,7 +33,8 @@ export interface File {
 // Link object - Represents a hyperlink in Contentstack
 export interface Link {
   title: string;
-  href: string;
+  href?: string; // For backward compatibility
+  url?: string;  // ContentStack uses 'url' not 'href'
 }
 
 // Taxonomy object - Represents a taxonomy in Contentstack
