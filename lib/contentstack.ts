@@ -133,10 +133,16 @@ export async function getProductListingPage(url: string) {
     .where("url", QueryOperation.EQUALS, url);
 
   // Include all references to fetch hero banners, products, etc.
-  // Call includeReference() twice to populate nested references (e.g., products -> authors)
+  // Use includeReference with depth to populate nested references
   if (query.includeReference) {
     console.log("4. Including references (with nested references)");
-    query.includeReference().includeReference();
+    // Try using BASE include mode which includes all referenced content
+    query.includeReference();
+  }
+
+  // Also try setting include_count and include_fallback
+  if (query.includeCount) {
+    query.includeCount();
   }
 
   console.log("5. Executing query...");
@@ -156,6 +162,18 @@ export async function getProductListingPage(url: string) {
         const keys = Object.keys(c);
         return `${i}: ${keys.join(', ')}`;
       }));
+
+      // Debug product references
+      result.entries[0].page_components.forEach((comp: any, idx: number) => {
+        if (comp.product?.product) {
+          console.log(`   - Component ${idx} products:`, comp.product.product.map((p: any) => ({
+            uid: p.uid,
+            hasTitle: !!p.title,
+            hasPrice: p.price != null,
+            keys: Object.keys(p)
+          })));
+        }
+      });
     }
 
     const entry = result.entries[0] as ProductListingPage;

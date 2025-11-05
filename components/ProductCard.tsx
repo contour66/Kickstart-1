@@ -65,7 +65,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               className="text-3xl font-black bg-gradient-to-r from-yellow-500 to-orange-600 bg-clip-text text-transparent"
               {...(product.$ ? product.$.price : {})}
             >
-              ${product.price.toFixed(2)}
+              {product.price != null ? `$${product.price.toFixed(2)}` : 'Price not available'}
             </span>
           </div>
         </Link>
