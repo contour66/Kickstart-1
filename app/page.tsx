@@ -9,6 +9,7 @@ import { getHomepage, initLivePreview } from "@/lib/contentstack";
 import { Homepage, PageComponent } from "@/lib/types";
 import HeroBanner from "@/components/HeroBanner";
 import ProductCard from "@/components/ProductCard";
+import Widget from "@/components/Widget";
 import {
   SectionComponent,
   SectionWithBucketsComponent,
@@ -180,6 +181,11 @@ export default function Home() {
           </div>
         </div>
       );
+    }
+
+    // Widget Block
+    if ("widget" in component) {
+      return <Widget key={index} widget={component.widget} />;
     }
 
     // Contact Us Block

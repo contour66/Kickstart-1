@@ -5,10 +5,7 @@ import { useParams } from "next/navigation";
 import ContentstackLivePreview, {
   VB_EmptyBlockParentClass,
 } from "@contentstack/live-preview-utils";
-import {
-  getProductListingPage,
-  initLivePreview,
-} from "@/lib/contentstack";
+import { initLivePreview, getProductListingPage } from "@/lib/contentstack";
 import { ProductListingPage, PageComponent } from "@/lib/types";
 import HeroBanner from "@/components/HeroBanner";
 import ProductCard from "@/components/ProductCard";
@@ -21,41 +18,66 @@ import {
 } from "@/components/SectionRenderer";
 
 /**
- * Product Listing Page component
- * Displays a list of products with optional hero banner and sections
+ * The `ProductListingPageView` component displays a product listing page with various components
+ * including hero banners, product grids, and widgets.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered product listing page.
  */
-export default function ProductListingPageComponent() {
+export default function ProductListingPageView() {
   const params = useParams();
   const slug = params?.slug as string;
-  const [plp, setPlp] = useState<ProductListingPage>();
-  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState<ProductListingPage>();
+  const [error, setError] = useState<string | null>(null);
+
+  // Early return if no slug
+  if (!slug) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-gray-700">Invalid URL</h2>
+          <p className="text-gray-500 mt-2">No slug provided in the URL</p>
+        </div>
+      </div>
+    );
+  }
 
   const getContent = async () => {
-    // Redirect to homepage if slug is empty or just "/"
-    if (!slug || slug === "/" || slug === "") {
-      if (typeof window !== "undefined") {
-        window.location.href = "/";
-      }
-      return;
-    }
-
-    setLoading(true);
-
     try {
-      console.log("=== [slug] Route Debug ===");
+      console.log("=== Product Listing Page Debug ===");
       console.log("Slug:", slug);
-      console.log("Fetching URL:", `/${slug}`);
 
-      const data = await getProductListingPage(`/${slug}`);
+      // Try different URL formats
+      const urlVariations = [
+        `/${slug}`,           // /music-instruments
+        slug,                 // music-instruments
+        `/${slug}/`,          // /music-instruments/
+      ];
 
-      console.log("Data received:", data);
+      console.log("Trying URL variations:", urlVariations);
+
+      let data = null;
+      for (const url of urlVariations) {
+        console.log("Trying URL:", url);
+        data = await getProductListingPage(url);
+        if (data) {
+          console.log("Success with URL:", url);
+          break;
+        }
+      }
+
+      console.log("Final data received:", data);
       console.log("Page components:", data?.page_components);
 
-      setPlp(data);
+      if (data) {
+        setPage(data);
+        setError(null);
+      } else {
+        setError(`No product listing page found for slug: "${slug}". Please check the URL field in ContentStack. Tried: ${urlVariations.join(', ')}`);
+      }
     } catch (err) {
-      console.error("Error in [slug] route:", err);
-    } finally {
-      setLoading(false);
+      console.error("Error fetching product listing page:", err);
+      setError(`Failed to load product listing page content: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
 
@@ -67,6 +89,8 @@ export default function ProductListingPageComponent() {
   }, [slug]);
 
   const renderPageComponent = (component: PageComponent, index: number) => {
+    console.log(`Rendering component ${index}:`, component);
+
     try {
       // Hero Banner Block
       if ("hero_banner" in component) {
@@ -88,6 +112,9 @@ export default function ProductListingPageComponent() {
             {...(component.product?.$ || {})}
           >
             <div className="container mx-auto px-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">
+                Products
+              </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {products?.map((product, i) => (
                   <ProductCard key={product.uid || i} product={product} />
@@ -96,6 +123,11 @@ export default function ProductListingPageComponent() {
             </div>
           </div>
         );
+      }
+
+      // Widget Block
+      if ("widget" in component) {
+        return <Widget key={index} widget={component.widget} />;
       }
 
       // Section Block
@@ -133,11 +165,6 @@ export default function ProductListingPageComponent() {
         );
       }
 
-      // Widget Block - Related Products
-      if ("widget" in component) {
-        return <Widget key={index} widget={component.widget} />;
-      }
-
       return null;
     } catch (err) {
       console.error(`Error rendering component ${index}:`, err);
@@ -149,25 +176,37 @@ export default function ProductListingPageComponent() {
     }
   };
 
-  if (loading) {
+  if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-700">Loading...</h2>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center max-w-2xl mx-auto p-8">
+          <h1 className="text-3xl font-bold text-red-600 mb-4">
+            Product Listing Page Error
+          </h1>
+          <p className="text-lg text-gray-700 mb-6">{error}</p>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-left">
+            <h3 className="font-semibold text-gray-900 mb-2">Quick Fix:</h3>
+            <ol className="list-decimal list-inside space-y-2 text-gray-700">
+              <li>Go to ContentStack CMS</li>
+              <li>Navigate to Content → Product Listing Page</li>
+              <li>Create or publish an entry</li>
+              <li>Refresh this page</li>
+            </ol>
+          </div>
         </div>
       </div>
     );
   }
 
-  if (!plp) {
+  if (!page) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-semibold text-gray-700">
-            Product Listing Page Not Found
+            Loading product listing page...
           </h2>
           <p className="text-gray-500 mt-2">
-            The page you&apos;re looking for doesn&apos;t exist.
+            Fetching content from ContentStack
           </p>
         </div>
       </div>
@@ -176,29 +215,24 @@ export default function ProductListingPageComponent() {
 
   return (
     <main className="min-h-screen bg-white">
-      {/* Page Title */}
-      <div className="bg-gray-50 py-8 border-b">
-        <div className="container mx-auto px-4">
-          <h1
-            className="text-4xl md:text-5xl font-bold text-gray-900"
-            {...(plp.$ && plp.$.title)}
-          >
-            {plp.title}
-          </h1>
-        </div>
-      </div>
-
-      {/* Page Components */}
       <div
         className={`${
-          !plp.page_components || plp.page_components.length === 0
+          !page.page_components || page.page_components.length === 0
             ? VB_EmptyBlockParentClass
             : ""
         }`}
-        {...(plp.$ && plp.$.page_components)}
+        {...(page.$ && page.$.page_components ? page.$.page_components : {})}
       >
-        {plp.page_components?.map((component, index) =>
-          renderPageComponent(component, index)
+        {page.page_components && page.page_components.length > 0 ? (
+          page.page_components.map((component, index) =>
+            renderPageComponent(component, index)
+          )
+        ) : (
+          <div className="container mx-auto px-4 py-12 text-center">
+            <p className="text-gray-600">
+              No components have been added to this page yet.
+            </p>
+          </div>
         )}
       </div>
     </main>

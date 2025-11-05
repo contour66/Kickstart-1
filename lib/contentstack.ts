@@ -121,6 +121,8 @@ export async function getHomepage() {
 
 // Function to fetch product listing page by URL
 export async function getProductListingPage(url: string) {
+  console.log("getProductListingPage called with URL:", url);
+
   const query: any = stack
     .contentType("product_listing_page")
     .entry()
@@ -134,6 +136,9 @@ export async function getProductListingPage(url: string) {
 
   const result = await query.find();
 
+  console.log("Query result:", result);
+  console.log("Number of entries found:", result.entries?.length || 0);
+
   if (result.entries && result.entries.length > 0) {
     const entry = result.entries[0] as ProductListingPage;
 
@@ -143,6 +148,8 @@ export async function getProductListingPage(url: string) {
 
     return entry;
   }
+
+  return undefined;
 }
 
 // Function to fetch all product listing pages
