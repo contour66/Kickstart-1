@@ -12,6 +12,9 @@ import {
   Product,
 } from "./types";
 
+// Import helper for populating product references
+import { populateProductReferences } from "./populateProductReferences";
+
 // helper functions from private package to retrieve Contentstack endpoints in a convienient way
 import { getContentstackEndpoints, getRegionForString } from "@timbenniks/contentstack-endpoints";
 
@@ -176,13 +179,23 @@ export async function getProductListingPage(url: string) {
       });
     }
 
-    const entry = result.entries[0] as ProductListingPage;
+    let entry = result.entries[0] as ProductListingPage;
+
+    // Populate product references if they're stubs
+    if (entry.page_components) {
+      console.log("7. Populating product references...");
+      const populatedComponents = await populateProductReferences(entry.page_components);
+      entry = {
+        ...entry,
+        page_components: populatedComponents
+      };
+    }
 
     if (process.env.NEXT_PUBLIC_CONTENTSTACK_PREVIEW === 'true') {
       contentstack.Utils.addEditableTags(entry, 'product_listing_page', true);
     }
 
-    console.log("7. Returning entry");
+    console.log("8. Returning entry");
     return entry;
   }
 
