@@ -127,16 +127,16 @@ export default function ProductDetailPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white">
       {/* Breadcrumb */}
-      <div className="bg-gray-50 py-4 border-b">
+      <div className="bg-gradient-to-r from-gray-900 to-purple-900 py-4 border-b-4 border-purple-500">
         <div className="container mx-auto px-4">
-          <nav className="flex items-center space-x-2 text-sm text-gray-600">
-            <Link href="/" className="hover:text-blue-600">
+          <nav className="flex items-center space-x-2 text-sm text-gray-300">
+            <Link href="/" className="hover:text-purple-400 transition-colors font-semibold">
               Home
             </Link>
-            <span>/</span>
-            <span className="text-gray-900">{product.title}</span>
+            <span className="text-purple-400">→</span>
+            <span className="text-white font-bold">{product.title}</span>
           </nav>
         </div>
       </div>
@@ -148,12 +148,12 @@ export default function ProductDetailPage() {
           <div className="space-y-4">
             {/* Main Image */}
             {mainImage?.url && (
-              <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
+              <div className="relative aspect-square bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl overflow-hidden shadow-2xl ring-4 ring-purple-500/20 ring-offset-4">
                 <Image
                   src={mainImage.url}
                   alt={product.title}
                   fill
-                  className="object-cover"
+                  className="object-cover hover:scale-105 transition-transform duration-500"
                   priority
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   {...(mainImage.$ || {})}
@@ -168,10 +168,10 @@ export default function ProductDetailPage() {
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`relative aspect-square bg-gray-100 rounded-lg overflow-hidden border-2 transition-all ${
+                    className={`relative aspect-square bg-gray-100 rounded-xl overflow-hidden border-3 transition-all transform hover:scale-105 ${
                       selectedImage === index
-                        ? "border-blue-600"
-                        : "border-transparent hover:border-gray-300"
+                        ? "border-purple-600 ring-2 ring-purple-400 shadow-lg"
+                        : "border-transparent hover:border-purple-300"
                     }`}
                   >
                     <Image
@@ -191,15 +191,15 @@ export default function ProductDetailPage() {
           <div className="space-y-6">
             <div>
               <h1
-                className="text-4xl md:text-5xl font-bold text-gray-900 mb-4"
+                className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 mb-6 uppercase tracking-tight"
                 {...(product.$ && product.$.title)}
               >
                 {product.title}
               </h1>
 
-              <div className="flex items-baseline gap-4">
+              <div className="flex items-baseline gap-4 mb-6">
                 <span
-                  className="text-4xl font-bold text-gray-900"
+                  className="text-5xl md:text-6xl font-black text-gray-900 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent"
                   {...(product.$ && product.$.price)}
                 >
                   ${product.price.toFixed(2)}
@@ -209,10 +209,10 @@ export default function ProductDetailPage() {
 
             {product.description && (
               <div
-                className="prose max-w-none text-gray-700 border-t border-b border-gray-200 py-6"
+                className="prose max-w-none text-gray-800 border-l-4 border-purple-600 bg-gradient-to-r from-purple-50 to-transparent pl-6 py-6"
                 {...(product.$ && product.$.description)}
               >
-                <p className="text-lg whitespace-pre-wrap">
+                <p className="text-lg md:text-xl leading-relaxed whitespace-pre-wrap">
                   {product.description}
                 </p>
               </div>
@@ -223,7 +223,7 @@ export default function ProductDetailPage() {
               <div className="space-y-4">
                 <Link
                   href={product.call_to_action.href || product.call_to_action.url || '#'}
-                  className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center font-semibold px-8 py-4 rounded-lg transition-colors text-lg"
+                  className="block w-full bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 hover:from-purple-700 hover:via-pink-700 hover:to-red-700 text-white text-center font-black px-8 py-5 rounded-xl transition-all transform hover:scale-105 shadow-2xl text-xl uppercase tracking-wide"
                   {...(product.$ && product.$.call_to_action)}
                 >
                   {product.call_to_action.title}
@@ -232,25 +232,27 @@ export default function ProductDetailPage() {
             )}
 
             {/* Additional Product Info */}
-            <div className="bg-gray-50 p-6 rounded-lg space-y-3">
-              <h3 className="font-semibold text-lg text-gray-900 mb-4">
+            <div className="bg-gradient-to-br from-gray-900 to-purple-900 p-8 rounded-xl space-y-4 shadow-xl border-2 border-purple-500/30">
+              <h3 className="font-black text-xl text-white mb-6 uppercase tracking-wide border-b-2 border-purple-500 pb-3">
                 Product Details
               </h3>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Product ID:</span>
-                <span className="font-medium text-gray-900">{product.uid}</span>
+                <span className="text-gray-300 font-semibold">Product ID:</span>
+                <span className="font-bold text-purple-300">{product.uid}</span>
               </div>
               {product.url && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">URL:</span>
-                  <span className="font-medium text-gray-900">
+                  <span className="text-gray-300 font-semibold">URL:</span>
+                  <span className="font-bold text-purple-300">
                     {product.url}
                   </span>
                 </div>
               )}
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Availability:</span>
-                <span className="font-medium text-green-600">In Stock</span>
+                <span className="text-gray-300 font-semibold">Availability:</span>
+                <span className="font-black text-green-400 bg-green-900/30 px-4 py-1 rounded-full">
+                  ✓ In Stock
+                </span>
               </div>
             </div>
           </div>

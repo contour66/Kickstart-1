@@ -25,28 +25,48 @@ export default function HeroBanner({ banner }: HeroBannerProps) {
 
   return (
     <div
-      className="relative w-full overflow-hidden"
-      style={{ backgroundColor: bgColor, color: textColor }}
+      className="relative w-full overflow-hidden bg-gradient-to-br from-gray-900 via-purple-900 to-black"
+      style={{
+        backgroundColor: bgColor !== "transparent" ? bgColor : undefined,
+        color: textColor
+      }}
       {...(banner.$ ? banner.$ : {})}
     >
+      {/* Background pattern overlay */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0" style={{
+          backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.05) 10px, rgba(255,255,255,.05) 20px)'
+        }}></div>
+      </div>
+
       <div
         className={`${
           banner.is_banner_image_full_width_ ? "w-full" : "container mx-auto"
-        } px-4 py-12 md:py-20`}
+        } px-4 py-16 md:py-28 relative z-10`}
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Content Section */}
-          <div className={`${contentAlignment} space-y-6`}>
+          <div className={`${contentAlignment} space-y-8`}>
             <h1
-              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
+              className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight uppercase tracking-tight"
+              style={{
+                textShadow: '3px 3px 6px rgba(0,0,0,0.7)',
+                color: textColor === "#000000" ? "white" : textColor
+              }}
               {...(banner.$ ? banner.$.title : {})}
             >
-              {banner.title}
+              <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent">
+                {banner.title}
+              </span>
             </h1>
 
             {banner.banner_description && (
               <p
-                className="text-lg md:text-xl opacity-90"
+                className="text-xl md:text-2xl font-medium leading-relaxed"
+                style={{
+                  textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                  color: textColor === "#000000" ? "#E5E7EB" : textColor
+                }}
                 {...(banner.$ ? banner.$.banner_description : {})}
               >
                 {banner.banner_description}
@@ -57,7 +77,7 @@ export default function HeroBanner({ banner }: HeroBannerProps) {
               <div className={contentAlignment}>
                 <Link
                   href={banner.call_to_action.href || banner.call_to_action.url || '#'}
-                  className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors duration-300"
+                  className="inline-block bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 hover:from-purple-700 hover:via-pink-700 hover:to-red-700 text-white font-black px-12 py-5 rounded-xl transition-all transform hover:scale-110 shadow-2xl text-xl uppercase tracking-wider"
                   {...(banner.$ ? banner.$.call_to_action : {})}
                 >
                   {banner.call_to_action.title || "Learn More"}
@@ -69,7 +89,7 @@ export default function HeroBanner({ banner }: HeroBannerProps) {
           {/* Image Section */}
           {banner.banner_image?.url && (
             <div className={imageAlignment}>
-              <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-2xl">
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl ring-4 ring-purple-500/50 ring-offset-4 ring-offset-gray-900 transform hover:scale-105 transition-transform duration-500">
                 <Image
                   src={banner.banner_image.url}
                   alt={banner.title}
