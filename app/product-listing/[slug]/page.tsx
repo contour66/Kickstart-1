@@ -30,19 +30,8 @@ export default function ProductListingPageView() {
   const [page, setPage] = useState<ProductListingPage>();
   const [error, setError] = useState<string | null>(null);
 
-  // Early return if no slug
-  if (!slug) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-700">Invalid URL</h2>
-          <p className="text-gray-500 mt-2">No slug provided in the URL</p>
-        </div>
-      </div>
-    );
-  }
-
   const getContent = async () => {
+    if (!slug) return;
     try {
       console.log("=== Product Listing Page Debug ===");
       console.log("Slug:", slug);
@@ -175,6 +164,18 @@ export default function ProductListingPageView() {
       );
     }
   };
+
+  // Handle no slug case
+  if (!slug) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-gray-700">Invalid URL</h2>
+          <p className="text-gray-500 mt-2">No slug provided in the URL</p>
+        </div>
+      </div>
+    );
+  }
 
   if (error) {
     return (
