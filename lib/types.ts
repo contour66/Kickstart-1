@@ -159,18 +159,23 @@ export interface Author {
 
 // Product Modular Blocks
 export interface FeaturedArtistBlock {
-  reference?: Author;
+  reference?: Author[] | { uid: string; _content_type_uid: string }[];
+  _metadata?: any;
 }
 
 export interface ProductSpecsBlock {
   specs?: {
     set_type?: "5-piece" | "4-piece" | "3-piece";
   };
+  _metadata?: any;
 }
 
 export interface SimilarItemsBlock {
-  // References section_with_cards global field
-  section_with_cards?: SectionWithCards;
+  // Similar items uses section_with_cards fields directly, not as a wrapper
+  section_title?: string;
+  section_description?: string;
+  cards?: Card[];
+  _metadata?: any;
 }
 
 export type ProductModularBlock =

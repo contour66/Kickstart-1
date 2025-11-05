@@ -226,17 +226,12 @@ export async function getProductByUid(uid: string) {
   console.log("=== getProductByUid Debug ===");
   console.log("Fetching product with UID:", uid);
 
-  const query: any = stack
+  // Use includeReference() to populate nested references
+  const entry = await stack
     .contentType("product")
-    .entry(uid);
-
-  // Include all references (author, section_with_cards, etc.)
-  if (query.includeReference) {
-    console.log("Including references for modular blocks");
-    query.includeReference();
-  }
-
-  const entry = await query.fetch();
+    .entry(uid)
+    .includeReference()
+    .fetch();
 
   if (entry) {
     const product = entry as Product;

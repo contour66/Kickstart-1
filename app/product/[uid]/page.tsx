@@ -76,10 +76,31 @@ export default function ProductDetailPage() {
     try {
       // Featured Artist Block
       if ("featured_artist" in block) {
-        const artist = block.featured_artist?.reference;
-        return artist ? (
-          <FeaturedArtist key={index} artist={artist} />
-        ) : null;
+        const reference = block.featured_artist?.reference;
+        // Check if reference is an array and has data
+        if (Array.isArray(reference) && reference.length > 0) {
+          const firstRef = reference[0];
+          // Check if it's a full Author object (has title field) or just a reference stub
+          if ('title' in firstRef) {
+            return <FeaturedArtist key={index} artist={firstRef} />;
+          } else {
+            // Reference not populated - show warning
+            console.warn('Featured artist reference not populated. Need to fetch author data separately or use includeReference.');
+            return (
+              <div key={index} className="py-12 md:py-16 bg-gray-50">
+                <div className="container mx-auto px-4">
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-8">
+                    Featured Artist
+                  </h2>
+                  <p className="text-center text-gray-600">
+                    Artist reference not loaded. UID: {firstRef.uid}
+                  </p>
+                </div>
+              </div>
+            );
+          }
+        }
+        return null;
       }
 
       // Product Specs Block
@@ -87,12 +108,18 @@ export default function ProductDetailPage() {
         return <ProductSpecs key={index} specsBlock={block.product_specs} />;
       }
 
-      // Similar Items Block (section_with_cards)
+      // Similar Items Block - data is directly in the block, not wrapped
       if ("similar_items" in block) {
-        const similarItems = block.similar_items?.section_with_cards;
-        return similarItems ? (
+        const similarItems = block.similar_items;
+        // Create a SectionWithCards-compatible object
+        const sectionData = {
+          section_title: similarItems.section_title,
+          section_description: similarItems.section_description,
+          cards: similarItems.cards,
+        };
+        return similarItems.cards && similarItems.cards.length > 0 ? (
           <div key={index}>
-            <SectionWithCardsComponent section={similarItems} />
+            <SectionWithCardsComponent section={sectionData} />
           </div>
         ) : null;
       }
