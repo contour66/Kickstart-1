@@ -157,6 +157,27 @@ export interface Author {
   $?: any;
 }
 
+// Product Modular Blocks
+export interface FeaturedArtistBlock {
+  reference?: Author;
+}
+
+export interface ProductSpecsBlock {
+  specs?: {
+    set_type?: "5-piece" | "4-piece" | "3-piece";
+  };
+}
+
+export interface SimilarItemsBlock {
+  // References section_with_cards global field
+  section_with_cards?: SectionWithCards;
+}
+
+export type ProductModularBlock =
+  | { featured_artist: FeaturedArtistBlock }
+  | { product_specs: ProductSpecsBlock }
+  | { similar_items: SimilarItemsBlock };
+
 // Product Model
 export interface Product {
   uid: string;
@@ -166,6 +187,7 @@ export interface Product {
   featured_image: File[];
   price: number;
   call_to_action?: Link;
+  modular_blocks?: ProductModularBlock[];
   $?: any;
   _version?: number;
   _metadata?: any;

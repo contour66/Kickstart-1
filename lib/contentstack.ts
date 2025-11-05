@@ -223,18 +223,42 @@ export async function getProduct(url: string) {
 
 // Function to fetch a single product by UID
 export async function getProductByUid(uid: string) {
-  const entry = await stack
+  console.log("=== getProductByUid Debug ===");
+  console.log("Fetching product with UID:", uid);
+
+  const query: any = stack
     .contentType("product")
-    .entry(uid)
-    .fetch<Product>();
+    .entry(uid);
+
+  // Include all references (author, section_with_cards, etc.)
+  if (query.includeReference) {
+    console.log("Including references for modular blocks");
+    query.includeReference();
+  }
+
+  const entry = await query.fetch<Product>();
 
   if (entry) {
+    console.log("Product fetched successfully");
+    console.log("Title:", entry.title);
+    console.log("Modular blocks count:", entry.modular_blocks?.length || 0);
+
+    if (entry.modular_blocks) {
+      console.log("Modular block types:", entry.modular_blocks.map((b: any, i: number) => {
+        const keys = Object.keys(b);
+        return `${i}: ${keys.join(', ')}`;
+      }));
+    }
+
     if (process.env.NEXT_PUBLIC_CONTENTSTACK_PREVIEW === 'true') {
       contentstack.Utils.addEditableTags(entry, 'product', true);
     }
 
     return entry;
   }
+
+  console.log("Product not found");
+  return undefined;
 }
 
 // Function to fetch all products

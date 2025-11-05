@@ -6,7 +6,10 @@ import Image from "next/image";
 import Link from "next/link";
 import ContentstackLivePreview from "@contentstack/live-preview-utils";
 import { getProductByUid, initLivePreview } from "@/lib/contentstack";
-import { Product } from "@/lib/types";
+import { Product, ProductModularBlock } from "@/lib/types";
+import FeaturedArtist from "@/components/FeaturedArtist";
+import ProductSpecs from "@/components/ProductSpecs";
+import { SectionWithCardsComponent } from "@/components/SectionRenderer";
 
 /**
  * Product Detail Page (PDP) component
@@ -68,6 +71,42 @@ export default function ProductDetailPage() {
 
   const mainImage = product.featured_image?.[selectedImage];
   const hasMultipleImages = product.featured_image?.length > 1;
+
+  const renderModularBlock = (block: ProductModularBlock, index: number) => {
+    try {
+      // Featured Artist Block
+      if ("featured_artist" in block) {
+        const artist = block.featured_artist?.reference;
+        return artist ? (
+          <FeaturedArtist key={index} artist={artist} />
+        ) : null;
+      }
+
+      // Product Specs Block
+      if ("product_specs" in block) {
+        return <ProductSpecs key={index} specsBlock={block.product_specs} />;
+      }
+
+      // Similar Items Block (section_with_cards)
+      if ("similar_items" in block) {
+        const similarItems = block.similar_items?.section_with_cards;
+        return similarItems ? (
+          <div key={index}>
+            <SectionWithCardsComponent section={similarItems} />
+          </div>
+        ) : null;
+      }
+
+      return null;
+    } catch (err) {
+      console.error(`Error rendering modular block ${index}:`, err);
+      return (
+        <div key={index} className="bg-red-50 border border-red-200 p-4 m-4 rounded">
+          <p className="text-red-800">Error rendering block</p>
+        </div>
+      );
+    }
+  };
 
   return (
     <main className="min-h-screen bg-white">
@@ -199,6 +238,15 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Modular Blocks */}
+      {product.modular_blocks && product.modular_blocks.length > 0 && (
+        <div className="border-t border-gray-200">
+          {product.modular_blocks.map((block, index) =>
+            renderModularBlock(block, index)
+          )}
+        </div>
+      )}
     </main>
   );
 }
