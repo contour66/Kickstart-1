@@ -1,0 +1,121 @@
+{
+  "title": "Homepage",
+  "uid": "homepage",
+  "fields": [
+    {
+      "display_name": "Title",
+      "uid": "title",
+      "data_type": "text",
+      "mandatory": true
+    },
+    {
+      "display_name": "Hero Section",
+      "uid": "hero_section",
+      "data_type": "group",
+      "schema": [
+        {
+          "display_name": "Heading",
+          "uid": "heading",
+          "data_type": "text"
+        },
+        {
+          "display_name": "Subheading",
+          "uid": "subheading",
+          "data_type": "text"
+        },
+        {
+          "display_name": "Background Image",
+          "uid": "background_image",
+          "data_type": "file"
+        },
+        {
+          "display_name": "CTA Text",
+          "uid": "cta_text",
+          "data_type": "text"
+        },
+        {
+          "display_name": "CTA Link",
+          "uid": "cta_link",
+          "data_type": "text"
+        }
+      ]
+    },
+    {
+      "display_name": "Featured Products",
+      "uid": "featured_products",
+      "data_type": "reference",
+      "reference_to": ["product"],
+      "multiple": true
+    },
+    {
+      "display_name": "Featured Categories",
+      "uid": "featured_categories",
+      "data_type": "reference",
+      "reference_to": ["category"],
+      "multiple": true
+    },
+    {
+      "display_name": "Content Blocks",
+      "uid": "content_blocks",
+      "data_type": "blocks",
+      "blocks": [
+        {
+          "title": "Text Block",
+          "uid": "text_block",
+          "schema": [
+            {
+              "display_name": "Heading",
+              "uid": "heading",
+              "data_type": "text"
+            },
+            {
+              "display_name": "Content",
+              "uid": "content",
+              "data_type": "rich_text_editor"
+            }
+          ]
+        },
+        {
+          "title": "Image Text Block",
+          "uid": "image_text_block",
+          "schema": [
+            {
+              "display_name": "Heading",
+              "uid": "heading",
+              "data_type": "text"
+            },
+            {
+              "display_name": "Content",
+              "uid": "content",
+              "data_type": "text"
+            },
+            {
+              "display_name": "Image",
+              "uid": "image",
+              "data_type": "file"
+            },
+            {
+              "display_name": "Layout",
+              "uid": "layout",
+              "data_type": "select",
+              "choices": [
+                {"value": "image_left"},
+                {"value": "image_right"}
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "display_name": "SEO Meta Title",
+      "uid": "seo_meta_title",
+      "data_type": "text"
+    },
+    {
+      "display_name": "SEO Meta Description",
+      "uid": "seo_meta_description",
+      "data_type": "text"
+    }
+  ]
+}

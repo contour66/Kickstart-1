@@ -1,0 +1,57 @@
+{
+  "title": "Product",
+  "uid": "product",
+  "description": "Lets you create a product landing page with product details such as product name, description, image, price etc.",
+  "fields": [
+    {
+      "display_name": "Title",
+      "uid": "title",
+      "data_type": "text",
+      "mandatory": true,
+      "unique": true
+    },
+    {
+      "display_name": "URL",
+      "uid": "url",
+      "data_type": "text",
+      "mandatory": false,
+      "unique": false
+    },
+    {
+      "display_name": "Description",
+      "uid": "description",
+      "data_type": "text",
+      "field_metadata": {
+        "multiline": true
+      },
+      "mandatory": false,
+      "multiple": false
+    },
+    {
+      "display_name": "Featured Image",
+      "uid": "featured_image",
+      "data_type": "file",
+      "mandatory": true,
+      "multiple": true
+    },
+    {
+      "display_name": "Price",
+      "uid": "price",
+      "data_type": "number",
+      "mandatory": true
+    },
+    {
+      "display_name": "Call to action",
+      "uid": "call_to_action",
+      "data_type": "link",
+      "mandatory": false
+    }
+  ],
+  "options": {
+    "is_page": true,
+    "singleton": false,
+    "title": "title",
+    "url_pattern": "/:unique_id",
+    "url_prefix": "/product/"
+  }
+}

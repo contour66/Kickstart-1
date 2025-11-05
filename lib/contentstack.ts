@@ -121,7 +121,10 @@ export async function getHomepage() {
 
 // Function to fetch product listing page by URL
 export async function getProductListingPage(url: string) {
-  console.log("getProductListingPage called with URL:", url);
+  console.log("=== getProductListingPage Debug ===");
+  console.log("1. Called with URL:", url);
+  console.log("2. Environment:", process.env.NEXT_PUBLIC_CONTENTSTACK_ENVIRONMENT);
+  console.log("3. Preview enabled:", process.env.NEXT_PUBLIC_CONTENTSTACK_PREVIEW);
 
   const query: any = stack
     .contentType("product_listing_page")
@@ -131,22 +134,53 @@ export async function getProductListingPage(url: string) {
 
   // Include all references to fetch hero banners, products, etc.
   if (query.includeReference) {
+    console.log("4. Including references");
     query.includeReference();
   }
 
+  console.log("5. Executing query...");
   const result = await query.find();
 
-  console.log("Query result:", result);
-  console.log("Number of entries found:", result.entries?.length || 0);
+  console.log("6. Query result received");
+  console.log("   - Total entries found:", result.entries?.length || 0);
 
   if (result.entries && result.entries.length > 0) {
+    console.log("   - First entry UID:", result.entries[0].uid);
+    console.log("   - First entry title:", result.entries[0].title);
+    console.log("   - First entry URL:", result.entries[0].url);
+    console.log("   - Page components count:", result.entries[0].page_components?.length || 0);
+
+    if (result.entries[0].page_components) {
+      console.log("   - Page component types:", result.entries[0].page_components.map((c: any, i: number) => {
+        const keys = Object.keys(c);
+        return `${i}: ${keys.join(', ')}`;
+      }));
+    }
+
     const entry = result.entries[0] as ProductListingPage;
 
     if (process.env.NEXT_PUBLIC_CONTENTSTACK_PREVIEW === 'true') {
       contentstack.Utils.addEditableTags(entry, 'product_listing_page', true);
     }
 
+    console.log("7. Returning entry");
     return entry;
+  }
+
+  console.log("7. No entries found - trying to fetch all PLPs to see what URLs exist...");
+
+  // Debug: Fetch all PLPs to see what URLs exist
+  const allQuery: any = stack
+    .contentType("product_listing_page")
+    .entry()
+    .query();
+
+  const allResult = await allQuery.find();
+  console.log("   - All PLPs found:", allResult.entries?.length || 0);
+  if (allResult.entries) {
+    allResult.entries.forEach((e: any, i: number) => {
+      console.log(`   - PLP ${i}: uid=${e.uid}, title=${e.title}, url=${e.url}`);
+    });
   }
 
   return undefined;

@@ -1,0 +1,54 @@
+{
+  "title": "Category",
+  "uid": "category",
+  "fields": [
+    {
+      "display_name": "Title",
+      "uid": "title",
+      "data_type": "text",
+      "mandatory": true,
+      "unique": true
+    },
+    {
+      "display_name": "URL",
+      "uid": "url",
+      "data_type": "text",
+      "mandatory": true,
+      "unique": true
+    },
+    {
+      "display_name": "Description",
+      "uid": "description",
+      "data_type": "text",
+      "field_metadata": {
+        "multiline": true
+      }
+    },
+    {
+      "display_name": "Featured Image",
+      "uid": "featured_image",
+      "data_type": "file"
+    },
+    {
+      "display_name": "Banner Image",
+      "uid": "banner_image",
+      "data_type": "file"
+    },
+    {
+      "display_name": "SEO Meta Title",
+      "uid": "seo_meta_title",
+      "data_type": "text"
+    },
+    {
+      "display_name": "SEO Meta Description",
+      "uid": "seo_meta_description",
+      "data_type": "text"
+    },
+    {
+      "display_name": "Display Order",
+      "uid": "display_order",
+      "data_type": "number",
+      "default_value": 0
+    }
+  ]
+}
