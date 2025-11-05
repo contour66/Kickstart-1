@@ -236,25 +236,26 @@ export async function getProductByUid(uid: string) {
     query.includeReference();
   }
 
-  const entry = await query.fetch<Product>();
+  const entry = await query.fetch();
 
   if (entry) {
+    const product = entry as Product;
     console.log("Product fetched successfully");
-    console.log("Title:", entry.title);
-    console.log("Modular blocks count:", entry.modular_blocks?.length || 0);
+    console.log("Title:", product.title);
+    console.log("Modular blocks count:", product.modular_blocks?.length || 0);
 
-    if (entry.modular_blocks) {
-      console.log("Modular block types:", entry.modular_blocks.map((b: any, i: number) => {
+    if (product.modular_blocks) {
+      console.log("Modular block types:", product.modular_blocks.map((b: any, i: number) => {
         const keys = Object.keys(b);
         return `${i}: ${keys.join(', ')}`;
       }));
     }
 
     if (process.env.NEXT_PUBLIC_CONTENTSTACK_PREVIEW === 'true') {
-      contentstack.Utils.addEditableTags(entry, 'product', true);
+      contentstack.Utils.addEditableTags(product, 'product', true);
     }
 
-    return entry;
+    return product;
   }
 
   console.log("Product not found");
