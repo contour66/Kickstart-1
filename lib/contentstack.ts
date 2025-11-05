@@ -242,11 +242,15 @@ export async function getProductByUid(uid: string) {
     const product = entry as Product;
     console.log("Product fetched successfully");
     console.log("Title:", product.title);
+    console.log("Raw entry data:", JSON.stringify(entry, null, 2));
+    console.log("Modular blocks:", product.modular_blocks);
     console.log("Modular blocks count:", product.modular_blocks?.length || 0);
 
     if (product.modular_blocks) {
       console.log("Modular block types:", product.modular_blocks.map((b: any, i: number) => {
         const keys = Object.keys(b);
+        console.log(`Block ${i} keys:`, keys);
+        console.log(`Block ${i} data:`, JSON.stringify(b, null, 2));
         return `${i}: ${keys.join(', ')}`;
       }));
     }
