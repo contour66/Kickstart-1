@@ -35,6 +35,9 @@ export default function Home() {
   const getContent = async () => {
     try {
       const data = await getHomepage();
+      console.log("Homepage data received:", data);
+      console.log("Page components:", data?.page_components);
+
       if (data) {
         setHomepage(data);
         setError(null);
@@ -55,14 +58,20 @@ export default function Home() {
   }, []);
 
   const renderPageComponent = (component: PageComponent, index: number) => {
+    console.log(`Rendering component ${index}:`, component);
+
     // Hero Banner Block
     if ("hero_banner" in component) {
-      const heroBanners = component.hero_banner.hero_banner;
-      return (
+      console.log("Hero banner component found:", component.hero_banner);
+      const heroBanner = component.hero_banner.hero_banner;
+      console.log("Hero banner data:", heroBanner);
+      return heroBanner ? (
         <div key={index} {...(component.hero_banner.$ || {})}>
-          {heroBanners?.map((banner, i) => (
-            <HeroBanner key={i} banner={banner} />
-          ))}
+          <HeroBanner banner={heroBanner} />
+        </div>
+      ) : (
+        <div key={index} className="bg-red-100 p-4">
+          <p>Hero banner block found but no hero banner reference selected</p>
         </div>
       );
     }
